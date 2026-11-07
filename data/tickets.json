@@ -1,0 +1,13 @@
+
+[
+  {
+    "ticket_id": "TCK-001",
+    "tenant_id": "tenant-001",
+    "customer_id": "customer-001",
+    "subject": "Takım arkadaşı davet edemiyorum",
+    "description": "Projeme yeni bir kullanıcı davet etmek istiyorum ama davet butonu pasif görünüyor.",
+    "status": "open",
+    "priority": "unknown",
+    "created_at": "2026-11-07T10:00:00Z"
+  }
+]
