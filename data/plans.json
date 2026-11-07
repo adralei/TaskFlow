@@ -1,0 +1,13 @@
+
+[
+  {
+    "plan_id": "free",
+    "name": "Free",
+    "max_members": 5
+  },
+  {
+    "plan_id": "pro",
+    "name": "Pro",
+    "max_members": 20
+  }
+]

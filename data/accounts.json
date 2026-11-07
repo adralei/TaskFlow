@@ -1,0 +1,31 @@
+
+[
+  {
+    "tenant_id": "tenant-001",
+    "workspace_name": "Acme Workspace",
+    "plan_id": "free",
+    "member_count": 5,
+    "users": [
+      {
+        "user_id": "customer-001",
+        "role": "admin"
+      },
+      {
+        "user_id": "user-002",
+        "role": "member"
+      }
+    ]
+  },
+  {
+    "tenant_id": "tenant-002",
+    "workspace_name": "Nova Workspace",
+    "plan_id": "pro",
+    "member_count": 8,
+    "users": [
+      {
+        "user_id": "customer-002",
+        "role": "member"
+      }
+    ]
+  }
+]
