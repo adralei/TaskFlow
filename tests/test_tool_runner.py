@@ -11,7 +11,7 @@ from pydantic import ValidationError
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from tool_runner import safe_run_investigation
+from tool_runner import ToolResponse, safe_run_investigation
 
 
 class TestSafeToolRunner(unittest.TestCase):
@@ -137,6 +137,38 @@ class TestSafeToolRunner(unittest.TestCase):
             response.error,
             "INTERNAL_ERROR"
         )
+
+    def test_success_requires_data(self):
+        with self.assertRaises(ValidationError):
+            ToolResponse(
+                success=True,
+                data=None
+            )
+
+    def test_success_cannot_have_error(self):
+        with self.assertRaises(ValidationError):
+            ToolResponse(
+                success=True,
+                data={"ticket_id": "TCK-001"},
+                error="UNKNOWN_ERROR"
+            )
+
+    def test_failure_requires_error(self):
+        with self.assertRaises(ValidationError):
+            ToolResponse(
+                success=False,
+                data=None,
+                error=None
+            )
+
+    def test_failure_cannot_contain_data(self):
+        with self.assertRaises(ValidationError):
+            ToolResponse(
+                success=False,
+                data={"workspace": "Acme Workspace"},
+                error="ACCESS_DENIED"
+            )
+
 
 
 if __name__ == "__main__":

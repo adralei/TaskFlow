@@ -1,12 +1,18 @@
 
 import json
 
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    ValidationError,
+    model_validator,
+)
 
 from tool_contract import (
     InvestigationRequest,
     run_investigation,
 )
+
 
 
 class ToolResponse(BaseModel):
@@ -18,6 +24,34 @@ class ToolResponse(BaseModel):
     success: bool
     data: dict | None = None
     error: str | None = None
+
+    @model_validator(mode="after")
+    def validate_response(self):
+
+        if self.success:
+            if self.data is None:
+                raise ValueError(
+                    "Successful tool response requires data."
+                )
+
+            if self.error is not None:
+                raise ValueError(
+                    "Successful tool response cannot have an error."
+                )
+
+        else:
+            if self.data is not None:
+                raise ValueError(
+                    "Failed tool response cannot contain data."
+                )
+
+            if not self.error:
+                raise ValueError(
+                    "Failed tool response requires an error code."
+                )
+
+        return self
+
 
 
 def safe_run_investigation(
