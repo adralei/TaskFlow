@@ -26,6 +26,7 @@ def chunk_document(content: str):
     ]
 
 
+
 def load_chunks():
     chunks = []
 
@@ -37,6 +38,22 @@ def load_chunks():
         sections = chunk_document(content)
 
         for index, section in enumerate(sections):
+
+            lines = [
+                line.strip()
+                for line in section.splitlines()
+                if line.strip()
+            ]
+
+            # Skip sections containing only headings.
+            heading_only = all(
+                line.startswith("#")
+                for line in lines
+            )
+
+            if heading_only:
+                continue
+
             chunks.append({
                 "chunk_id": f"{file_path.stem}:{index}",
                 "source": file_path.name,
@@ -44,6 +61,7 @@ def load_chunks():
             })
 
     return chunks
+
 
 
 def keyword_search(query: str, top_k: int = 3):
