@@ -85,5 +85,30 @@ class TestReportValidation(unittest.TestCase):
         )
 
 
+    def test_multiple_references_in_one_group(self):
+        result = validate_report_references(
+            "Solutions [invitations:2, plans:3].",
+            RETRIEVED_HITS
+        )
+
+        self.assertTrue(result["references_valid"])
+        self.assertEqual(
+            result["cited_ids"],
+            ["invitations:2", "plans:3"]
+        )
+
+    def test_unknown_reference_inside_group(self):
+        result = validate_report_references(
+            "Solutions [invitations:2, plans:999].",
+            RETRIEVED_HITS
+        )
+
+        self.assertFalse(result["references_valid"])
+        self.assertEqual(
+            result["unknown_ids"],
+            ["plans:999"]
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
