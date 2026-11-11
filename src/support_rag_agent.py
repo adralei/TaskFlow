@@ -10,6 +10,8 @@ from agent import (
 from tool_runner import safe_run_investigation
 from knowledge_tool import safe_search_knowledge
 
+from report_validation import validate_report_references
+
 
 TOOLS = [
     {
@@ -137,6 +139,7 @@ def run_support_agent():
     next_input = user_message
     responses = []
     embedding_tokens = 0
+    retrieved_hits = []
 
     for step, tool_name in enumerate(
         tool_sequence, start=1
@@ -208,6 +211,8 @@ def run_support_agent():
         if tool_name == "search_product_docs":
             data = result["data"]
 
+            retrieved_hits = data["results"]
+
             embedding_tokens += data["embedding_tokens"]
 
             print("[SOURCES]")
@@ -249,11 +254,43 @@ def run_support_agent():
 
     responses.append(final_response)
 
-    print("\n=== FINAL SUPPORT REPORT ===")
-    print(
-        final_response.output_text
-        or "No final report was generated."
+    
+    report_text = final_response.output_text or ""
+
+    audit = validate_report_references(
+        report_text,
+        retrieved_hits
     )
+
+    print("\n=== CITATION AUDIT ===")
+    print("References valid:", audit["references_valid"])
+    print("Cited IDs:", audit["cited_ids"])
+    print("Unknown IDs:", audit["unknown_ids"])
+    print(
+        "Noncanonical citations:",
+        audit["noncanonical_ids"]
+    )
+
+    if not audit["references_valid"]:
+        print("\n=== REPORT BLOCKED ===")
+        print(
+            "Missing or unknown citations. "
+            "Manual review required."
+        )
+    else:
+        print("\n=== FINAL SUPPORT REPORT (DRAFT) ===")
+        print(report_text)
+
+        if audit["noncanonical_ids"]:
+            print(
+                "\nFormatting note: prefer [chunk_id] citations."
+            )
+
+    print(
+        "\nGrounding status: NOT VERIFIED "
+        "(claim-level review required)"
+    )
+
 
     print("\n=== USAGE ===")
 
