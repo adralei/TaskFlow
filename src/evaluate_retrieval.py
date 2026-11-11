@@ -1,6 +1,10 @@
 
 from keyword_search import keyword_search
 from semantic_search import semantic_search
+from hybrid_search import reciprocal_rank_fusion
+
+
+TOP_K = 3
 
 
 EVALUATION_CASES = [
@@ -30,7 +34,7 @@ EVALUATION_CASES = [
 ]
 
 
-def recall_at_k(results, relevant_chunks):
+def recall_at_k(results, relevant_chunks, k=3):
     relevant = set(relevant_chunks)
 
     if not relevant:
@@ -39,8 +43,8 @@ def recall_at_k(results, relevant_chunks):
         )
 
     retrieved = {
-        result["chunk_id"]
-        for result in results
+        item["chunk_id"]
+        for item in results[:k]
     }
 
     found = retrieved.intersection(relevant)
@@ -48,8 +52,26 @@ def recall_at_k(results, relevant_chunks):
     return len(found) / len(relevant)
 
 
+def precision_at_k(results, relevant_chunks, k=3):
+    if k < 1:
+        raise ValueError("k must be positive.")
+
+    relevant = set(relevant_chunks)
+
+    retrieved = {
+        item["chunk_id"]
+        for item in results[:k]
+    }
+
+    found = retrieved.intersection(relevant)
+
+    return len(found) / k
+
+
 def evaluate():
-    print("=== RETRIEVAL EVALUATION ===")
+    print("=== RETRIEVAL COMPARISON ===")
+
+    total_embedding_tokens = 0
 
     for case in EVALUATION_CASES:
         print(f"\nScenario: {case['name']}")
@@ -57,43 +79,64 @@ def evaluate():
 
         relevant = case["relevant_chunks"]
 
+        # 1. Keyword Search
         keyword_results = keyword_search(
             case["query"],
-            top_k=3
+            top_k=TOP_K
         )
 
+        # 2. Semantic Search
         semantic_results, tokens = semantic_search(
             case["query"],
-            top_k=3
+            top_k=TOP_K
         )
 
-        keyword_recall = recall_at_k(
+        total_embedding_tokens += tokens
+
+        # 3. Hybrid Search using existing results
+        hybrid_results = reciprocal_rank_fusion(
             keyword_results,
-            relevant
+            semantic_results,
+            top_k=TOP_K
         )
 
-        semantic_recall = recall_at_k(
-            semantic_results,
-            relevant
-        )
+        methods = {
+            "Keyword": keyword_results,
+            "Semantic": semantic_results,
+            "Hybrid": hybrid_results
+        }
 
         print(f"Relevant chunks: {relevant}")
 
-        print("\nKeyword results:")
-        for result in keyword_results:
-            print(f"  {result['chunk_id']}")
-
-        print(f"Keyword Recall@3: {keyword_recall:.2f}")
-
-        print("\nSemantic results:")
-        for result in semantic_results:
-            print(
-                f"  {result['chunk_id']} "
-                f"(similarity={result['score']:.4f})"
+        for method_name, results in methods.items():
+            recall = recall_at_k(
+                results,
+                relevant,
+                TOP_K
             )
 
-        print(f"Semantic Recall@3: {semantic_recall:.2f}")
-        print(f"Embedding tokens: {tokens}")
+            precision = precision_at_k(
+                results,
+                relevant,
+                TOP_K
+            )
+
+            chunk_ids = [
+                item["chunk_id"]
+                for item in results
+            ]
+
+            print(f"\n{method_name} Search:")
+            print(f"  Results: {chunk_ids}")
+            print(f"  Recall@3: {recall:.2f}")
+            print(f"  Precision@3: {precision:.2f}")
+
+        print(f"\nEmbedding tokens: {tokens}")
+
+    print("\n=== TOTAL USAGE ===")
+    print(
+        f"Embedding tokens: {total_embedding_tokens}"
+    )
 
 
 if __name__ == "__main__":
