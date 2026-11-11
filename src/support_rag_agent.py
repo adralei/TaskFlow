@@ -12,6 +12,13 @@ from knowledge_tool import safe_search_knowledge
 
 from report_validation import validate_report_references
 
+from pathlib import Path
+
+from report_review import (
+    build_review_packet,
+    save_review_packet,
+)
+
 
 TOOLS = [
     {
@@ -140,6 +147,7 @@ def run_support_agent():
     responses = []
     embedding_tokens = 0
     retrieved_hits = []
+    ticket_evidence = None
 
     for step, tool_name in enumerate(
         tool_sequence, start=1
@@ -199,6 +207,7 @@ def run_support_agent():
 
         if tool_name == "investigate_support_ticket":
             data = result["data"]
+            ticket_evidence = data
 
             print(f"[TICKET] {data['ticket_id']}")
             print(
@@ -280,6 +289,28 @@ def run_support_agent():
     else:
         print("\n=== FINAL SUPPORT REPORT (DRAFT) ===")
         print(report_text)
+        packet = build_review_packet(
+            report_text,
+            retrieved_hits,
+            ticket_evidence,
+        )
+
+        saved_path = save_review_packet(
+            packet,
+            Path(__file__).resolve().parent.parent
+        )
+
+        print("\n=== GROUNDING REVIEW PACKET ===")
+        print("Saved to:", saved_path)
+        print("Review status:", packet["review_status"])
+        print(
+            "Cited lines:",
+            len(packet["cited_lines_for_review"])
+        )
+        print(
+            "Uncited lines:",
+            len(packet["uncited_lines_for_review"])
+        )
 
         if audit["noncanonical_ids"]:
             print(
