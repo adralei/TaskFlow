@@ -1,0 +1,78 @@
+{
+  "review_status": "PENDING_MANUAL_REVIEW",
+  "report_text": "TCK-001 numaralı destek talebinde, \"Acme Workspace\" adlı çalışma alanında 5 üye mevcut ve sanırım bu çalışma alanının Free (Ücretsiz) planında 5 üyelik maksimum limit kullanılmış. Üye limiti dolduğu için yeni takım arkadaşı davet edilemiyor (üye_limit_reached: true).\n\nÜrün belgelerine göre:\n- Davet butonu, üyelik limiti dolduğunda otomatik olarak devre dışı kalır ve ayrıca sadece çalışma alanı yöneticileri yeni davet gönderebilir (invitations:2, invitations:1).\n- Ücretsiz planda en fazla 5 üye alınabilir; bu limit dolduğunda yeni davet gönderilemez (plans:3).\n- Üye limiti dolduğunda, mevcut bir üyeyi kaldırmak yeni üyeye yer açabilir.\n- Veya plan yükseltilerek üye limiti artırılabilir ama bu işlem destek asistanı tarafından otomatik yapılmaz (plans:3).\n\nÖzetle çözüm önerileri:\n1. Mevcut üyelerden birini çıkararak davet edilebilirlik sağlanabilir.\n2. Çalışma alanı planı yükseltilerek üye limiti artırılabilir.\n3. Davet eden kullanıcının yönetici yetkisine sahip olduğu doğrulanmalı.\n\nBu bilgiler doğrultusunda destek talebinde plan yükseltme veya üye çıkartma seçenekleri değerlendirilebilir.",
+  "account_evidence": {
+    "ticket_id": "TCK-001",
+    "status": "open",
+    "priority": "unknown",
+    "workspace": "Acme Workspace",
+    "plan": "Free",
+    "member_count": 5,
+    "max_members": 5,
+    "member_limit_reached": true
+  },
+  "citation_audit": {
+    "references_valid": true,
+    "cited_ids": [
+      "invitations:2",
+      "invitations:1",
+      "plans:3"
+    ],
+    "unknown_ids": [],
+    "noncanonical_ids": [
+      "invitations:2",
+      "invitations:1",
+      "plans:3"
+    ]
+  },
+  "cited_lines_for_review": [
+    {
+      "text": "- Davet butonu, üyelik limiti dolduğunda otomatik olarak devre dışı kalır ve ayrıca sadece çalışma alanı yöneticileri yeni davet gönderebilir (invitations:2, invitations:1).",
+      "citations": [
+        {
+          "chunk_id": "invitations:2",
+          "source": "invitations.md",
+          "content": "## Invitation Button Behavior\n\nThe invitation button is disabled when the workspace\nhas reached its subscription member limit.\n\nThe button can also be disabled when the current user\ndoes not have invitation permissions."
+        },
+        {
+          "chunk_id": "invitations:1",
+          "source": "invitations.md",
+          "content": "## Invitation Permissions\n\nOnly workspace admins can invite new team members.\n\nMembers with the regular member role cannot send invitations."
+        }
+      ],
+      "manual_verdict": "NOT_REVIEWED"
+    },
+    {
+      "text": "- Ücretsiz planda en fazla 5 üye alınabilir; bu limit dolduğunda yeni davet gönderilemez (plans:3).",
+      "citations": [
+        {
+          "chunk_id": "plans:3",
+          "source": "plans.md",
+          "content": "## Member Limit Rules\n\nWhen the member count reaches the maximum allowed by\nthe subscription plan, additional invitations are blocked.\n\nRemoving an existing member may free capacity for another\ninvitation.\n\nUpgrading the plan may increase the available member limit.\n\nPlan changes are not performed automatically by the\nsupport assistant."
+        }
+      ],
+      "manual_verdict": "NOT_REVIEWED"
+    },
+    {
+      "text": "- Veya plan yükseltilerek üye limiti artırılabilir ama bu işlem destek asistanı tarafından otomatik yapılmaz (plans:3).",
+      "citations": [
+        {
+          "chunk_id": "plans:3",
+          "source": "plans.md",
+          "content": "## Member Limit Rules\n\nWhen the member count reaches the maximum allowed by\nthe subscription plan, additional invitations are blocked.\n\nRemoving an existing member may free capacity for another\ninvitation.\n\nUpgrading the plan may increase the available member limit.\n\nPlan changes are not performed automatically by the\nsupport assistant."
+        }
+      ],
+      "manual_verdict": "NOT_REVIEWED"
+    }
+  ],
+  "uncited_lines_for_review": [
+    "TCK-001 numaralı destek talebinde, \"Acme Workspace\" adlı çalışma alanında 5 üye mevcut ve sanırım bu çalışma alanının Free (Ücretsiz) planında 5 üyelik maksimum limit kullanılmış. Üye limiti dolduğu için yeni takım arkadaşı davet edilemiyor (üye_limit_reached: true).",
+    "Ürün belgelerine göre:",
+    "- Üye limiti dolduğunda, mevcut bir üyeyi kaldırmak yeni üyeye yer açabilir.",
+    "Özetle çözüm önerileri:",
+    "1. Mevcut üyelerden birini çıkararak davet edilebilirlik sağlanabilir.",
+    "2. Çalışma alanı planı yükseltilerek üye limiti artırılabilir.",
+    "3. Davet eden kullanıcının yönetici yetkisine sahip olduğu doğrulanmalı.",
+    "Bu bilgiler doğrultusunda destek talebinde plan yükseltme veya üye çıkartma seçenekleri değerlendirilebilir."
+  ]
+}
