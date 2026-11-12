@@ -1,4 +1,6 @@
 
+"""Prepare claim reviews by validating and collecting supporting evidence."""
+
 import json
 from pathlib import Path
 from typing import Literal
@@ -24,7 +26,11 @@ class ClaimEvidenceRequest(BaseModel):
         max_length=500
     )
 
-    evidence_type: Literal["ACCOUNT", "DOCUMENT"]
+    evidence_type: Literal[
+        "ACCOUNT",
+        "DOCUMENT",
+        "BOTH"
+    ]
 
     account_fields: list[str] = Field(
         default_factory=list
@@ -45,25 +51,37 @@ class ClaimEvidenceRequest(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def match_evidence_type(self):
+    def validate_evidence_type(self):
+
+        has_account = bool(self.account_fields)
+        has_document = bool(self.document_ids)
 
         if self.evidence_type == "ACCOUNT":
-            if not self.account_fields or self.document_ids:
-                raise ValueError(
-                    "ACCOUNT requires only account_fields."
-                )
+            valid = has_account and not has_document
+
+        elif self.evidence_type == "DOCUMENT":
+            valid = has_document and not has_account
 
         else:
-            if not self.document_ids or self.account_fields:
-                raise ValueError(
-                    "DOCUMENT requires only document_ids."
-                )
+            valid = has_account and has_document
 
-        fields = self.account_fields or self.document_ids
-
-        if len(fields) != len(set(fields)):
+        if not valid:
             raise ValueError(
-                "Duplicate evidence references."
+                "Evidence fields do not match evidence_type."
+            )
+
+        if len(self.account_fields) != len(
+            set(self.account_fields)
+        ):
+            raise ValueError(
+                "Duplicate account fields."
+            )
+
+        if len(self.document_ids) != len(
+            set(self.document_ids)
+        ):
+            raise ValueError(
+                "Duplicate document IDs."
             )
 
         return self
@@ -98,7 +116,8 @@ def prepare_claim_review(
 
         evidence = []
 
-        if request.evidence_type == "ACCOUNT":
+        # ACCOUNT or BOTH: resolve account evidence.
+        if request.evidence_type in ("ACCOUNT", "BOTH"):
 
             account = packet["account_evidence"]
 
@@ -116,7 +135,9 @@ def prepare_claim_review(
                     "value": account[field]
                 })
 
-        else:
+        # DOCUMENT or BOTH: resolve document evidence.
+        if request.evidence_type in ("DOCUMENT", "BOTH"):
+
             sources = {}
 
             for line in packet["cited_lines_for_review"]:
@@ -181,7 +202,7 @@ if __name__ == "__main__":
 
     if not packet_files:
         raise FileNotFoundError(
-            "Run support_rag_agent.py to create a packet."
+            "Run support_rag_agent.py first."
         )
 
     packet = json.loads(
@@ -200,11 +221,23 @@ if __name__ == "__main__":
             ]
         },
         {
-            "claim": (
-                "Üye limiti dolunca davet butonu "
-                "pasifleşir."
-            ),
+            "claim": "Üye limiti dolunca davet butonu pasifleşir.",
             "evidence_type": "DOCUMENT",
+            "document_ids": [
+                "invitations:2"
+            ]
+        },
+        {
+            "claim": (
+                "Acme Workspace'te üye limiti dolduğu "
+                "için yeni davet gönderilemiyor."
+            ),
+            "evidence_type": "BOTH",
+            "account_fields": [
+                "member_count",
+                "max_members",
+                "member_limit_reached"
+            ],
             "document_ids": [
                 "invitations:2"
             ]
@@ -229,10 +262,17 @@ if __name__ == "__main__":
                 "Evidence type:",
                 data["evidence_type"]
             )
+
             print(
                 "Evidence count:",
                 len(data["evidence"])
             )
+
+            print(
+                "Evidence kinds:",
+                [item["kind"] for item in data["evidence"]]
+            )
+
             print(
                 "Review verdict:",
                 data["review_verdict"]

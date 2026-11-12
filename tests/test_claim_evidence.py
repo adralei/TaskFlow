@@ -139,5 +139,83 @@ class TestClaimEvidence(unittest.TestCase):
         )
 
 
+    def test_both_evidence_success(self):
+        packet = {
+            **PACKET,
+            "account_evidence": {
+                **PACKET["account_evidence"],
+                "member_limit_reached": True
+            }
+        }
+
+        result = prepare_claim_review({
+            "claim": "Limit reached, invitations blocked.",
+            "evidence_type": "BOTH",
+            "account_fields": [
+                "member_limit_reached"
+            ],
+            "document_ids": [
+                "invitations:2"
+            ]
+        }, packet)
+
+        self.assertTrue(result["success"])
+
+        kinds = [
+            item["kind"]
+            for item in result["data"]["evidence"]
+        ]
+
+        self.assertEqual(
+            kinds,
+            ["ACCOUNT", "DOCUMENT"]
+        )
+
+        self.assertEqual(
+            result["data"]["review_verdict"],
+            "NOT_REVIEWED"
+        )
+
+    def test_both_requires_account_fields(self):
+        result = prepare_claim_review({
+            "claim": "Missing account evidence.",
+            "evidence_type": "BOTH",
+            "document_ids": ["invitations:2"]
+        }, PACKET)
+
+        self.assertEqual(
+            result["error"],
+            "INVALID_INPUT"
+        )
+
+    def test_both_requires_document_ids(self):
+        result = prepare_claim_review({
+            "claim": "Missing document evidence.",
+            "evidence_type": "BOTH",
+            "account_fields": ["member_count"]
+        }, PACKET)
+
+        self.assertEqual(
+            result["error"],
+            "INVALID_INPUT"
+        )
+
+    def test_both_rejects_unretrieved_document(self):
+        result = prepare_claim_review({
+            "claim": "Unsupported combined claim.",
+            "evidence_type": "BOTH",
+            "account_fields": ["member_count"],
+            "document_ids": ["plans:999"]
+        }, PACKET)
+
+        self.assertFalse(result["success"])
+
+        self.assertEqual(
+            result["error"],
+            "EVIDENCE_NOT_FOUND"
+        )
+
+
+
 if __name__ == "__main__":
     unittest.main()
