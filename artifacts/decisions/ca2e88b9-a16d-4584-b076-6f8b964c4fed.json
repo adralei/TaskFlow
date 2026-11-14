@@ -1,0 +1,11 @@
+{
+  "event_id": "ca2e88b9-a16d-4584-b076-6f8b964c4fed",
+  "event_type": "CLAIM_REVIEW_DECISION",
+  "claim": "The member limit is reached.",
+  "evidence_type": "ACCOUNT",
+  "evidence_sha256": "79838711019ef8c86411117f6f5e0d5b97cca983456f6ecf8cb1e05f7a06e81a",
+  "verdict": "NEEDS_MORE_EVIDENCE",
+  "reason": "Demonstration decision only; the claim has not undergone human review.",
+  "reviewer_id": "demo-reviewer",
+  "reviewed_at": "2026-11-14T19:14:16.200820+00:00"
+}
