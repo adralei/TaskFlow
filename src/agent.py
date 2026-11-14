@@ -5,7 +5,10 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from tool_runner import safe_run_investigation
+try:
+    from src.tool_runner import safe_run_investigation
+except ImportError:  # pragma: no cover
+    from tool_runner import safe_run_investigation
 
 
 load_dotenv()

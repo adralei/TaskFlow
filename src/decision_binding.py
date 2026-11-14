@@ -2,11 +2,14 @@
 import hashlib
 import json
 
-from claim_evidence import prepare_claim_review
-from review_decision import build_review_decision
-from decision_verification import (
-    verify_decision_against_review,
-)
+try:
+    from src.claim_evidence import prepare_claim_review
+    from src.review_decision import build_review_decision
+    from src.decision_verification import verify_decision_against_review
+except ImportError:  # pragma: no cover
+    from claim_evidence import prepare_claim_review
+    from review_decision import build_review_decision
+    from decision_verification import verify_decision_against_review
 
 
 def packet_fingerprint(packet: dict) -> str:

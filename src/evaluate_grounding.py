@@ -1,6 +1,10 @@
 
-from keyword_search import load_chunks
-from report_validation import validate_report_references
+try:
+    from src.keyword_search import load_chunks
+    from src.report_validation import validate_report_references
+except ImportError:  # pragma: no cover
+    from keyword_search import load_chunks
+    from report_validation import validate_report_references
 
 
 RETRIEVED_IDS = [

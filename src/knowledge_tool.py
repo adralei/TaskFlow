@@ -10,8 +10,12 @@ from pydantic import (
     model_validator,
 )
 
-from hybrid_search import hybrid_search
-from keyword_search import load_chunks
+try:
+    from src.hybrid_search import hybrid_search
+    from src.keyword_search import load_chunks
+except ImportError:  # pragma: no cover
+    from hybrid_search import hybrid_search
+    from keyword_search import load_chunks
 
 
 class KnowledgeSearchRequest(BaseModel):

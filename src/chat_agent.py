@@ -1,15 +1,27 @@
 
 import json
 
-from agent import (
-    client,
-    MODEL,
-    TOOLS,
-    INSTRUCTIONS,
-    SESSION_TENANT_ID,
-)
+try:
+    from src.agent import (
+        client,
+        MODEL,
+        TOOLS,
+        INSTRUCTIONS,
+        SESSION_TENANT_ID,
+    )
+except ImportError:  # pragma: no cover
+    from agent import (
+        client,
+        MODEL,
+        TOOLS,
+        INSTRUCTIONS,
+        SESSION_TENANT_ID,
+    )
 
-from tool_runner import safe_run_investigation
+try:
+    from src.tool_runner import safe_run_investigation
+except ImportError:  # pragma: no cover
+    from tool_runner import safe_run_investigation
 
 
 MAX_TOOL_CALLS = 3

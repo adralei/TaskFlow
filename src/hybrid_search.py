@@ -1,6 +1,10 @@
 
-from keyword_search import keyword_search
-from semantic_search import semantic_search
+try:
+    from src.keyword_search import keyword_search
+    from src.semantic_search import semantic_search
+except ImportError:  # pragma: no cover
+    from keyword_search import keyword_search
+    from semantic_search import semantic_search
 
 
 RRF_K = 60

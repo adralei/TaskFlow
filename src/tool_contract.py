@@ -6,7 +6,10 @@ from pydantic import (
     model_validator,
 )
 
-from investigate_ticket import investigate_ticket
+try:
+    from src.investigate_ticket import investigate_ticket
+except ImportError:  # pragma: no cover
+    from investigate_ticket import investigate_ticket
 
 
 class InvestigationRequest(BaseModel):

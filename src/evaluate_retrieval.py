@@ -1,7 +1,12 @@
 
-from keyword_search import keyword_search
-from semantic_search import semantic_search
-from hybrid_search import reciprocal_rank_fusion
+try:
+    from src.keyword_search import keyword_search
+    from src.semantic_search import semantic_search
+    from src.hybrid_search import reciprocal_rank_fusion
+except ImportError:  # pragma: no cover
+    from keyword_search import keyword_search
+    from semantic_search import semantic_search
+    from hybrid_search import reciprocal_rank_fusion
 
 
 TOP_K = 3

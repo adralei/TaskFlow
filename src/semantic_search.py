@@ -3,7 +3,10 @@ import math
 from openai import OpenAI
 from dotenv import load_dotenv
 
-from keyword_search import load_chunks, keyword_search
+try:
+    from src.keyword_search import load_chunks, keyword_search
+except ImportError:  # pragma: no cover
+    from keyword_search import load_chunks, keyword_search
 
 
 load_dotenv()

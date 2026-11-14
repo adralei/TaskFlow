@@ -8,10 +8,16 @@ from pydantic import (
     model_validator,
 )
 
-from tool_contract import (
-    InvestigationRequest,
-    run_investigation,
-)
+try:
+    from src.tool_contract import (
+        InvestigationRequest,
+        run_investigation,
+    )
+except ImportError:  # pragma: no cover
+    from tool_contract import (
+        InvestigationRequest,
+        run_investigation,
+    )
 
 
 

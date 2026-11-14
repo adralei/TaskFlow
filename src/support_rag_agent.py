@@ -1,23 +1,33 @@
 
 import json
-
-from agent import (
-    client,
-    MODEL,
-    SESSION_TENANT_ID,
-)
-
-from tool_runner import safe_run_investigation
-from knowledge_tool import safe_search_knowledge
-
-from report_validation import validate_report_references
-
 from pathlib import Path
 
-from report_review import (
-    build_review_packet,
-    save_review_packet,
-)
+try:
+    from src.agent import (
+        client,
+        MODEL,
+        SESSION_TENANT_ID,
+    )
+    from src.tool_runner import safe_run_investigation
+    from src.knowledge_tool import safe_search_knowledge
+    from src.report_validation import validate_report_references
+    from src.report_review import (
+        build_review_packet,
+        save_review_packet,
+    )
+except ImportError:  # pragma: no cover
+    from agent import (
+        client,
+        MODEL,
+        SESSION_TENANT_ID,
+    )
+    from tool_runner import safe_run_investigation
+    from knowledge_tool import safe_search_knowledge
+    from report_validation import validate_report_references
+    from report_review import (
+        build_review_packet,
+        save_review_packet,
+    )
 
 
 TOOLS = [

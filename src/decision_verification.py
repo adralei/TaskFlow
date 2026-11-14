@@ -3,7 +3,10 @@ import hashlib
 import json
 import re
 
-from review_decision import build_review_decision
+try:
+    from src.review_decision import build_review_decision
+except ImportError:  # pragma: no cover
+    from review_decision import build_review_decision
 
 
 def calculate_evidence_hash(evidence: list) -> str:

@@ -5,12 +5,20 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from report_validation import (
-    CITATION_GROUP_PATTERN,
-    CITATION_LIST_PATTERN,
-    CITATION_ID,
-    validate_report_references,
-)
+try:
+    from src.report_validation import (
+        CITATION_GROUP_PATTERN,
+        CITATION_LIST_PATTERN,
+        CITATION_ID,
+        validate_report_references,
+    )
+except ImportError:  # pragma: no cover
+    from report_validation import (
+        CITATION_GROUP_PATTERN,
+        CITATION_LIST_PATTERN,
+        CITATION_ID,
+        validate_report_references,
+    )
 
 
 EVIDENCE_FIELDS = [

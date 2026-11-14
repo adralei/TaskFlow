@@ -1,6 +1,10 @@
 
-from read_ticket import get_ticket
-from inspect_account import get_account, get_plan
+try:
+    from src.read_ticket import get_ticket
+    from src.inspect_account import get_account, get_plan
+except ImportError:  # pragma: no cover
+    from read_ticket import get_ticket
+    from inspect_account import get_account, get_plan
 
 
 def investigate_ticket(
